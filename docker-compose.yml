@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/rdpubana16/professional-portfolio:latest
+    image: ${DOCKER_IMAGE}
     restart: always
     expose:
       - "80"
