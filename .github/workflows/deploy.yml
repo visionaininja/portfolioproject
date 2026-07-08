@@ -14,9 +14,8 @@ env:
   DOCKER_IMAGE_TAG: v1
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,26 +39,30 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Deploy to VM via SSH
+  deploy:
+    runs-on: self-hosted
+    needs: build-and-push
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
         run: |
-          # Setup SSH directory and private key
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.VM_IP }} >> ~/.ssh/known_hosts
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-          # Create application directory on VM
-          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_IP }} "mkdir -p ~/app"
+      - name: Deploy Local Docker Compose
+        run: |
+          # Create app dir if not exists
+          mkdir -p ~/app
 
-          # Copy configuration files to the VM
-          scp docker-compose.yml Caddyfile ${{ secrets.VM_USER }}@${{ secrets.VM_IP }}:~/app/
+          # Copy current compose configs to deployment directory
+          cp docker-compose.yml Caddyfile ~/app/
 
-          # Create environment file, log in to Docker, pull image, and restart containers
-          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_IP }} "
-            cd ~/app
-            echo 'DOCKER_IMAGE=docker.io/${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}' > .env
-            echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
-            docker compose pull
-            docker compose up -d --remove-orphans
-            docker image prune -f
-          "
+          # Navigate and write environment configuration
+          cd ~/app
+          echo "DOCKER_IMAGE=docker.io/${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}" > .env
+
+          # Pull and update Docker containers
+          docker compose pull
+          docker compose up -d --remove-orphans
+          docker image prune -f
