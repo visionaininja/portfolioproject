@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { motion, useMotionValue, useTransform } from 'framer-motion'
-import { ArrowRight, Download, Check } from 'lucide-react'
+import { useState } from 'react'
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import { ArrowRight, Check } from 'lucide-react'
 
 interface SlideToDownloadProps {
   pdfUrl: string
@@ -40,7 +40,7 @@ export default function SlideToDownload({ pdfUrl, fileName }: SlideToDownloadPro
       }, 3500)
     } else {
       // Snap back to starting position if not slid all the way
-      motion.animate(dragX, 0, { type: 'spring', stiffness: 300, damping: 20 })
+      animate(dragX, 0, { type: 'spring', stiffness: 300, damping: 20 })
     }
   }
 

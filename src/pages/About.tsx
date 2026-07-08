@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { motion } from 'framer-motion'
 import { Award, Briefcase, Layers, Server, Wrench } from 'lucide-react'
 import ryanProfile from '../assets/ryan-ubana.png'

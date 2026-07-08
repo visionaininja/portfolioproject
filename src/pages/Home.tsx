@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Code, Cpu, Compass, Send, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Cpu, Compass, Send, Sparkles } from 'lucide-react'
 import InteractiveCard from '../components/InteractiveCard.tsx'
 import ProjectCard from '../components/ProjectCard.tsx'
 
