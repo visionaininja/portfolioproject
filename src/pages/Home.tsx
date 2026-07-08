@@ -83,9 +83,9 @@ export default function Home() {
         </div>
         
         <h1 className="font-display text-4xl font-black leading-tight tracking-tight sm:text-6xl md:text-8xl theme-text-primary">
-          BUILDING <br />
-          <span className="text-outline text-outline-hover transition-all duration-300">INTERACTIVE</span> <br />
-          INTERFACES.
+          ARCHITECTING <br />
+          <span className="text-outline text-outline-hover transition-all duration-300">DIGITAL</span> <br />
+          EXPERIENCES.
         </h1>
         
         <p className="max-w-2xl font-sans text-sm leading-relaxed theme-text-secondary md:text-base">
