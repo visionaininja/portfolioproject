@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ProjectCard from '../components/ProjectCard.tsx'
+import devopsTelemetryImg from '../assets/devops-telemetry.png'
 
 const projectsData = [
   {
@@ -23,10 +24,10 @@ const projectsData = [
   },
   {
     title: 'Chronos Telemetry Node',
-    description: 'A distributed systems node dashboard showing live CPU/RAM usage, container cluster health, and triggering Discord webhook alerts.',
+    description: 'A modern infrastructure dashboard providing deep, real-time visibility into Kubernetes nodes, pods, and host VM telemetry.',
     category: 'DevOps',
     tags: ['Go', 'Docker', 'InfluxDB', 'Nginx'],
-    image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+    image: devopsTelemetryImg,
     githubUrl: 'https://github.com',
     liveUrl: 'https://github.com'
   },
