@@ -68,12 +68,7 @@ export default function Home() {
       animate="visible"
       className="relative mx-auto max-w-7xl px-6 py-12 md:px-12 md:py-20"
     >
-      {/* Background Watermark (aaabadcode.com style) */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 flex justify-center overflow-hidden">
-        <div className="hidden bg-gradient-to-b from-neutral-500/10 to-neutral-500/0 bg-clip-text text-[5rem] leading-none font-black text-transparent select-none sm:block lg:text-[8rem]">
-          RYAN DANIELLE UBANA
-        </div>
-      </div>
+
 
       {/* Hero Section */}
       <motion.section variants={itemVariants} className="flex flex-col items-start gap-5">
