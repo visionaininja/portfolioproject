@@ -10,7 +10,7 @@ const projectsData = [
     category: 'Web Apps',
     tags: ['React', 'Vite', 'Framer Motion', 'Chart.js'],
     image: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=800&q=80',
-    githubUrl: 'https://github.com',
+    githubUrl: '',
     liveUrl: 'https://github.com'
   },
   {
@@ -19,25 +19,25 @@ const projectsData = [
     category: 'AI Tools',
     tags: ['React', 'TypeScript', 'Node.js', 'OpenAI API'],
     image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
-    githubUrl: 'https://github.com',
+    githubUrl: '',
     liveUrl: 'https://github.com'
   },
   {
-    title: 'Chronos Telemetry Node',
+    title: 'Monitoring & Observability',
     description: 'A modern infrastructure dashboard providing deep, real-time visibility into Kubernetes nodes, pods, and host VM telemetry.',
     category: 'DevOps',
     tags: ['Go', 'Docker', 'InfluxDB', 'Nginx'],
     image: devopsTelemetryImg,
-    githubUrl: 'https://github.com',
-    liveUrl: 'https://github.com'
+    githubUrl: '',
+    liveUrl: '/devops'
   },
   {
-    title: 'Vector Canvas engine',
+    title: 'Vector Canvas Engine',
     description: 'An interactive HTML5 Canvas editor supporting vector shapes, Bezier curves, exports to SVG, and custom key bindings.',
     category: 'Web Apps',
     tags: ['TypeScript', 'HTML5 Canvas', 'CSS Modules'],
     image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&q=80',
-    githubUrl: 'https://github.com',
+    githubUrl: '',
     liveUrl: 'https://github.com'
   },
   {
@@ -46,7 +46,7 @@ const projectsData = [
     category: 'DevOps',
     tags: ['Go', 'Redis', 'Docker Compose', 'GitHub Actions'],
     image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
-    githubUrl: 'https://github.com',
+    githubUrl: '',
     liveUrl: 'https://github.com'
   }
 ]

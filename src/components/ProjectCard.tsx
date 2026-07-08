@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Github } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 interface ProjectCardProps {
   title: string
@@ -19,7 +20,6 @@ export default function ProjectCard({
   tags,
   category,
   image,
-  githubUrl = '#',
   liveUrl = '#',
   index
 }: ProjectCardProps) {
@@ -30,20 +30,19 @@ export default function ProjectCard({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
-    
+
     const rect = cardRef.current.getBoundingClientRect()
     const width = rect.width
     const height = rect.height
-    
+
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
-    
+
     setCoords({ x, y })
-    
-    // Smooth 3D tilt rotation
+
     const rotateX = -((y - height / 2) / height) * 10
     const rotateY = ((x - width / 2) / width) * 10
-    
+
     setRotate({ x: rotateX, y: rotateY })
   }
 
@@ -51,6 +50,16 @@ export default function ProjectCard({
     setIsHovered(false)
     setRotate({ x: 0, y: 0 })
   }
+
+  // Determine if liveUrl is internal (React Router) or external
+  const isInternalLink = liveUrl.startsWith('/')
+
+  const OverviewLink = ({ children, className }: { children: React.ReactNode; className: string }) =>
+    isInternalLink ? (
+      <Link to={liveUrl} className={className}>{children}</Link>
+    ) : (
+      <a href={liveUrl} target="_blank" rel="noopener noreferrer" className={className}>{children}</a>
+    )
 
   return (
     <motion.div
@@ -78,7 +87,7 @@ export default function ProjectCard({
       />
 
       <div className="relative z-10 flex h-full flex-col overflow-hidden p-5">
-        
+
         {/* Project Thumbnail Image */}
         <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-white/5">
           <img
@@ -90,7 +99,7 @@ export default function ProjectCard({
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent opacity-85" />
-          
+
           {/* Category Badge */}
           <span className="absolute top-3 left-3 rounded-full bg-black/75 px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-white border border-white/10">
             {category}
@@ -121,27 +130,14 @@ export default function ProjectCard({
               ))}
             </div>
 
-            {/* Links */}
-            <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-4">
-              <a
-                href={githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#998f8f] hover:text-white transition-colors"
+            {/* Links — Overview only, Source Code removed */}
+            <div className="mt-5 flex items-center justify-end border-t border-white/5 pt-4">
+              <OverviewLink
+                className="group/btn flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white hover:text-white/80 transition-colors"
               >
-                <Github className="h-3.5 w-3.5" />
-                Source Code
-              </a>
-              
-              <a
-                href={liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group/btn flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white hover:text-white/80"
-              >
-                Launch App
+                Overview
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-              </a>
+              </OverviewLink>
             </div>
           </div>
         </div>
