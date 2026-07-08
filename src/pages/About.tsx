@@ -149,7 +149,7 @@ export default function About() {
         {/* Bio Text (right 7 columns) */}
         <motion.section variants={itemVariants} className="lg:col-span-7 flex flex-col justify-center">
           <h1 className="font-display text-4xl font-extrabold tracking-tight md:text-6xl theme-text-primary">
-            ABOUT <span className="text-outline text-outline-hover transition-colors">RYAN UBANA</span>
+            ABOUT <span className="text-outline text-outline-hover transition-colors">ME</span>
           </h1>
           <p className="mt-6 font-sans text-sm leading-relaxed theme-text-secondary md:text-base">
             I am a results-driven DevOps Engineer and Automation Specialist with 7+ years of extensive experience in test and production systems optimization and enterprise-scale software delivery.
