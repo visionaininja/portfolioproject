@@ -1,0 +1,23 @@
+services:
+  app:
+    image: ghcr.io/rdpubana16/professional-portfolio:latest
+    restart: always
+    expose:
+      - "80"
+
+  caddy:
+    image: caddy:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:
+  caddy_config:

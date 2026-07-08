@@ -1,0 +1,3 @@
+rdpubana-dev.ddns.net {
+    reverse_proxy app:80
+}
