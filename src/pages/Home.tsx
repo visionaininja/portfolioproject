@@ -89,7 +89,7 @@ export default function Home() {
         </h1>
         
         <p className="max-w-2xl font-sans text-sm leading-relaxed theme-text-secondary md:text-base">
-          Hi, I'm <span className="font-semibold theme-text-primary">Ryan Danielle Ubana</span>. I build front-end web applications with clean visual hierarchies, interactive fluid motion systems, and containerized deployments.
+          Hi, I'm <span className="font-semibold theme-text-primary">Ryan Danielle Ubana</span>. I design and manage the infrastructure that keeps modern web applications running. From packaging code into Docker containers to orchestrating clusters and automating cloud resources with Terraform, I build reliable systems that cut down deployment times and eliminate production bottlenecks.
         </p>
 
         <div className="mt-4 flex flex-wrap gap-3">
