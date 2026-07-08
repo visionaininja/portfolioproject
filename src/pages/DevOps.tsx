@@ -78,7 +78,7 @@ export default function DevOps() {
         </span>
         <h1 className="font-display text-4xl font-extrabold tracking-tight md:text-6xl theme-text-primary">
           MONITORING &amp; <br />
-          <span className="text-outline">OBSERVABILITY</span>
+          <span className="text-outline text-outline-hover transition-all duration-300">OBSERVABILITY</span>
         </h1>
         <p className="mt-6 max-w-2xl text-sm leading-relaxed theme-text-secondary">
           A modern infrastructure dashboard providing deep, real-time visibility into Kubernetes nodes, pods, and host VM telemetry.
