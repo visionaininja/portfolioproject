@@ -4,7 +4,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Accept build-time secrets for Vite (VITE_ prefix makes them available to the client bundle)
 ARG VITE_EMAILJS_SERVICE_ID
