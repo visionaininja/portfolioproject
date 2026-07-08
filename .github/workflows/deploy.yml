@@ -36,5 +36,4 @@ jobs:
           push: true
           tags: |
             docker.io/${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
