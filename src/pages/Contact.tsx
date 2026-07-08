@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
+import emailjs from '@emailjs/browser'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, MapPin, Send, CheckCircle2, MessageSquareCode } from 'lucide-react'
+import { Mail, MapPin, Send, CheckCircle2, MessageSquareCode, AlertCircle } from 'lucide-react'
 import InteractiveCard from '../components/InteractiveCard.tsx'
 
 const containerVariants = {
@@ -28,6 +29,18 @@ const inquiryTypes = [
   'Saying Hello 👋'
 ]
 
+// ──────────────────────────────────────────────────────────────
+// EmailJS configuration
+// 1. Sign up at https://www.emailjs.com (free plan: 200 emails/month)
+// 2. Create an Email Service and connect your Gmail (rdpubana16@gmail.com)
+// 3. Create an Email Template with these template variables:
+//      {{from_name}}, {{from_email}}, {{subject}}, {{message}}
+// 4. Replace the three placeholders below with your real IDs
+// ──────────────────────────────────────────────────────────────
+const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID  || 'YOUR_SERVICE_ID'
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID'
+const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  || 'YOUR_PUBLIC_KEY'
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -35,29 +48,49 @@ export default function Contact() {
     subject: 'General Question',
     message: ''
   })
-  
+
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
 
   const selectInquiry = (type: string) => {
     setFormData(prev => ({ ...prev, subject: type }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('submitting')
-    
-    // Simulate API submission
-    setTimeout(() => {
+
+    const templateParams = {
+      // matches {{from_name}} and {{from_email}} in the email body
+      from_name:  formData.name,
+      from_email: formData.email,
+      // matches {{title}} in the Subject field
+      title:      formData.subject,
+      // matches {{subject}} in the email body
+      subject:    formData.subject,
+      // matches {{message}} in the email body
+      message:    formData.message,
+      // matches {{name}} in the From Name field
+      name:       formData.name,
+      // matches {{email}} in the Reply To field
+      email:      formData.email,
+      to_email:   'rdpubana16@gmail.com',
+    }
+
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        { publicKey: EMAILJS_PUBLIC_KEY }
+      )
       setStatus('success')
-      setFormData({
-        name: '',
-        email: '',
-        subject: 'General Question',
-        message: ''
-      })
-      
-      setTimeout(() => setStatus('idle'), 5000)
-    }, 1500)
+      setFormData({ name: '', email: '', subject: 'General Question', message: '' })
+      setTimeout(() => setStatus('idle'), 6000)
+    } catch (err) {
+      console.error('EmailJS error:', err)
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 6000)
+    }
   }
 
   return (
@@ -76,7 +109,7 @@ export default function Contact() {
               <span className="text-outline text-outline-hover transition-colors">CONNECT</span>
             </h1>
             <p className="mt-6 theme-text-secondary text-xs md:text-sm leading-relaxed max-w-sm">
-              I am open to new frontend design contracts, full-time remote developer roles, or system engineering collaborations.
+              I am open to new infrastructure contracts, full-time DevOps roles, or cloud engineering collaborations.
             </p>
 
             <div className="mt-12 flex flex-col gap-6">
@@ -86,8 +119,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <div className="text-[9px] uppercase tracking-widest text-neutral-500 font-bold">Email Me</div>
-                  <a href="mailto:hello@ryandanielleubana.com" className="text-xs font-bold theme-text-primary hover:theme-text-secondary transition-colors">
-                    hello@ryandanielleubana.com
+                  <a href="mailto:rdpubana16@gmail.com" className="text-xs font-bold theme-text-primary hover:theme-text-secondary transition-colors">
+                    rdpubana16@gmail.com
                   </a>
                 </div>
               </div>
@@ -124,7 +157,7 @@ export default function Contact() {
         <motion.div variants={itemVariants} className="lg:col-span-7">
           <div className="rounded-2xl border theme-border bg-white/3 dark:bg-white/3 light:bg-black/3 p-8">
             <h2 className="font-display text-lg font-bold theme-text-primary mb-6">Send an Inquiry</h2>
-            
+
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               {/* Inquiry categories selector */}
               <div className="flex flex-col gap-2">
@@ -138,8 +171,8 @@ export default function Contact() {
                         type="button"
                         onClick={() => selectInquiry(type)}
                         className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer active-spring-scale
-                          ${isSelected 
-                            ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white' 
+                          ${isSelected
+                            ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white'
                             : 'bg-white/5 dark:bg-white/5 light:bg-black/5 theme-text-secondary theme-border'}`}
                       >
                         {type}
@@ -202,7 +235,7 @@ export default function Contact() {
                     <span>Sending Message...</span>
                   ) : (
                     <>
-                      <span>Transmit Message</span>
+                      <span>Send Message</span>
                       <Send className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </>
                   )}
@@ -219,7 +252,18 @@ export default function Contact() {
                     className="flex items-center gap-3 rounded-xl border border-green-500/20 bg-green-500/10 p-4 text-[11px] font-semibold text-green-400"
                   >
                     <CheckCircle2 className="h-4 w-4 text-green-400 flex-shrink-0" />
-                    <span>Inquiry processed! Transmission complete. I'll get back to you shortly.</span>
+                    <span>Message sent! I'll get back to you at rdpubana16@gmail.com shortly.</span>
+                  </motion.div>
+                )}
+                {status === 'error' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-[11px] font-semibold text-red-400"
+                  >
+                    <AlertCircle className="h-4 w-4 text-red-400 flex-shrink-0" />
+                    <span>Something went wrong. Please try again or email rdpubana16@gmail.com directly.</span>
                   </motion.div>
                 )}
               </AnimatePresence>
