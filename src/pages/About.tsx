@@ -23,10 +23,33 @@ const itemVariants = {
 
 const timelineData = [
   {
+    year: '2026 – Present',
+    role: 'Senior DevOps Engineer (Yourspeak webapp platform)',
+    company: 'Supportninja',
+    description: [
+      'Designed & Scaled Resilient OCI Infrastructure: Built the multi-region, auto-scaling foundation for the YourSpeak social media platform on Oracle Cloud Infrastructure (OCI). Utilized Infrastructure as Code (IaC) to handle unpredictable traffic spikes, designed secure network topologies (VCNs, private subnets, strict security lists), and authored disaster recovery plans to ensure continuous platform availability.',
+      'Streamlined Containerized CI/CD & Pipeline Security: Developed end-to-end continuous integration and deployment pipelines using GitHub Repositories and GitHub Actions. Automated Docker container workflows to ship immutable images to registries, integrated automated security scanning directly into pipelines, and established a reliable, zero-downtime microservices release cycle.',
+      'Architected Zero-Trust Networks & Vulnerability Governance: Engineered zero-trust network topologies within OCI by isolating critical workloads across private subnets, Virtual Cloud Networks (VCNs), and restrictive security lists. Strengthened the platform\'s security posture by embedding automated vulnerability scanning directly into GitHub deployment pipelines and securely managing sensitive environment variables.',
+      'Secured Perimeter Defense & API Traffic Engineering: Deployed and optimized the OCI API Gateway architecture to manage high-throughput traffic for volatile social features like messaging and real-time user feeds. Mitigated systemic abuse and shielded backend microservices from viral spikes by implementing strict rate limiting, robust authentication, and secure CORS policies.',
+      'Optimized Traffic Management & Custom Observability: Configured OCI API Gateways to route and secure high-throughput traffic for core social features (user feeds, messaging) via rate limiting, authentication, and CORS policies. Engineered a proprietary, in-house monitoring dashboard and telemetry system to track real-time latencies, successfully cutting production MTTR by 95%.',
+      'Engineered Technical Governance & DevOps Runbooks: Created comprehensive system architecture diagrams, OCI disaster recovery strategies, and pipeline documentation in GitHub. This formalized incident response protocols, shifted the engineering team toward an asynchronous, self-service infrastructure model, and significantly streamlined developer onboarding.'
+    ],
+    project: {
+      name: 'Yourspeak webapp platform',
+      description: 'Built a multi-region, auto-scaling foundation on OCI using IaC, designed zero-trust network topologies, configured OCI API Gateways with strict rate limiting, and created custom telemetry monitoring dashboards, reducing production MTTR by 95%.'
+    },
+    icon: Briefcase,
+    color: 'theme-border theme-text-primary bg-white/5 dark:bg-white/5 light:bg-black/5'
+  },
+  {
     year: '2025 – 2026',
-    role: 'Automation Specialist (Ecommerce B2B)',
+    role: 'Technical Project Manager (B2B Ecommerce SAAS Product)',
     company: 'Marketpush & EETech Commerce',
-    description: 'Owned the end-to-end automation lifecycle for B2B e-commerce platforms, establishing immutable zero-downtime workflows and collaborating to deploy decoupled, microservices-driven payment gateways and customer APIs.',
+    description: [
+      'Orchestrated Agile QA Strategy & Shift-Left Automation: Led the end-to-end QA strategy for the MarketPush B2B e-commerce platform by embedding automated validation early in the SDLC. This stabilized multi-vendor code contributions, accelerated sprint velocity, and ultimately reduced post-release defects by 90% while establishing structured defect triage workflows across cross-functional teams.',
+      'Managed Complex Multi-Vendor Roadmaps & E-Commerce Workflows: Aligned phased automation roadmaps with enterprise release trains, managing milestones for critical B2B modules such as multi-supplier catalogs, bulk ordering, net-terms checkout, and tiered pricing. Partnered with Product Owners and external stakeholders to translate complex business logic (like RFQ lifecycles) into actionable technical test cases using BDD frameworks (Cucumber/SpecFlow) within Azure DevOps.',
+      'Governed Microservices, CI/CD, & Third-Party Integrations: Spearheaded the integration of scalable automated testing frameworks into Azure DevOps CI/CD pipelines, enforcing continuous execution gates to enable zero-downtime microservices deployments. Mitigated technical risk by overseeing the secure, automated validation of complex ecosystem dependencies, including B2B payment gateways (Stripe, ACH), supplier inventory synchronization, and 3PL APIs.'
+    ],
     project: {
       name: 'Marketpush (2025)',
       description: 'Engineered and managed high-throughput, zero-downtime integration pipelines that isolated monolithic payment gateways and real-time inventory systems into microservices. Maintained continuous availability by leveraging production telemetry tracking (SLIs/SLOs) to identify and automatically clear pipeline bottlenecks.'
@@ -36,9 +59,12 @@ const timelineData = [
   },
   {
     year: '2024 – 2025',
-    role: 'OSS Implementation & Automation Specialist (NOTH Project)',
+    role: 'Open-Source Software Implementation & Automation Specialist (NOTH Project)',
     company: 'Advanced World Solutions',
-    description: 'Architected high-data API synchronization workflows between B2B Marketpush and production databases, and designed and validated failover Terraform pipelines.',
+    description: [
+      'High-Throughput Data Syncing: Architected high-data API workflows to automate synchronization between B2B Marketpush platforms and core production databases, removing manual dependencies and processing thousands of concurrent inventory updates with minimal latency.',
+      'High-Availability IaC Design: Engineered and validated Terraform (IaC) pipelines comparing Active-Passive failover models with Point-In-Time Restore (PITR) capabilities to guarantee continuous database uptime and zero-data-loss recovery for transaction systems.'
+    ],
     project: {
       name: 'NEC - OSS platform (2024)',
       description: 'Designed high-performance API workflows to handle thousands of concurrent inventory and database sync operations with ultra-low latency. Designed and tested infrastructure-as-code (IaC) failover strategies, comparing Active-Passive models against Point-In-Time Restore (PITR) to secure zero-data-loss capabilities for high-stakes transactional data.'
@@ -48,9 +74,12 @@ const timelineData = [
   },
   {
     year: '2023 – 2024',
-    role: 'Junior Automation Specialist (Kyocera Project)',
+    role: 'Junior Automation Specialist (Kyocera Inc. Project)',
     company: 'Advanced World Solutions, Inc.',
-    description: 'Configured automated GitHub Actions pipelines with strict namespace validation rules for secure staging/production environment isolation, and engineered mobile device telemetry collection workflows.',
+    description: [
+      'Secure Environment Isolation: Configured automated GitHub Actions CI/CD pipelines to build and deploy high-throughput mobile tracking application services, enforcing strict target namespace validation rules to cleanly isolate staging and production environments.',
+      'Telemetry Data Engineering: Engineered real-time API workflows capturing mobile device telemetry and optimized automated data collection logic, significantly reducing processing delays for incoming location strings across live environments.'
+    ],
     project: {
       name: 'Kyocera (2023)',
       description: 'Implemented automated GitHub Actions CI/CD pipelines configured with strict namespace validation rules to prevent lower-environment configurations from bleeding into live production spaces. Optimized incoming mobile location string data collection logic to speed up telemetry processing across staging and production clusters.'
@@ -61,8 +90,11 @@ const timelineData = [
   {
     year: '2022 – 2023',
     role: 'Cloud Operations Engineer (RedHat Services)',
-    company: 'Advanced World Solutions / IBM Japan (Onsite)',
-    description: 'Streamlined infrastructure orchestration by implementing robust DevOps pipelines utilizing RedHat OpenShift, Jenkins, SonarQube, and GitLab.',
+    company: 'Advanced World Solutions, Inc. / IBM Japan (Onsite)',
+    description: [
+      'Enterprise DevOps Delivery: Streamlined project delivery and infrastructure orchestration by implementing robust DevOps pipelines utilizing RedHat OpenShift, Jenkins, SonarQube, and GitLab.',
+      'Cloud Security & Compliance: Enforced strict cloud security policies within IBM Cloud and OpenShift environments by executing regular static/dynamic code scans using SonarQube to remediate vulnerabilities before production release.'
+    ],
     project: {
       name: 'ROKS - IBM (2022)',
       description: 'Streamlined onsite project delivery by designing containerized DevOps workflows across hybrid cloud environments utilizing RedHat OpenShift, Jenkins, and GitLab. Established secure code deployment baselines by building automated static and dynamic SonarQube quality gates to block vulnerabilities prior to IBM Cloud releases.'
@@ -72,9 +104,13 @@ const timelineData = [
   },
   {
     year: '2019 – 2022',
-    role: 'Junior Software Engineer (AIP Plus)',
+    role: 'Junior Software Engineer (AIP Plus System)',
     company: 'Accenture',
-    description: 'Automated software releases across multiple environments, built production-grade Linux Bash scripts for system health and administration, and maintained compliance across Windows and Linux server clusters.',
+    description: [
+      'Environment Automation: Enhanced deployment efficiency and consistency by automating software releases across multiple testing and production environments using a diverse array of DevOps tools and cloud services.',
+      'Systems Administration & Scripting: Developed production-grade Linux Bash scripts to streamline system health checks, automate routine server administration tasks, and significantly reduce manual engineering intervention.',
+      'Vulnerability Management: Maintained platform security compliance by managing and patching critical vulnerabilities across enterprise Windows and Linux (RHEL, CentOS, Ubuntu) server clusters.'
+    ],
     project: {
       name: 'AIP Plus + Spark (2019)',
       description: 'Developed a suite of production-grade Linux Bash scripts that eliminated manual intervention by automating routine server health checks and multi-component software deployments. Controlled and remediated infrastructure security threats by managing patch deployments across cross-platform enterprise environments running Windows Server, RHEL, CentOS, and Ubuntu.'
@@ -87,12 +123,12 @@ const timelineData = [
 const skillGroups = [
   {
     category: 'Containerization & Orchestration',
-    skills: ['OpenShift', 'Kubernetes', 'Docker'],
+    skills: ['OpenShift', 'Kubernetes', 'Docker', 'Rancher'],
     icon: Server
   },
   {
     category: 'CI/CD & Automation',
-    skills: ['Jenkins', 'GitLab CI', 'GitHub Actions', 'Azure DevOps', 'Tekton', 'Argo CD', 'n8n', 'Make', 'Zapier'],
+    skills: ['Jenkins', 'GitLab CI', 'GitHub Actions', 'Azure DevOps', 'Zapier', 'ArgoCD', 'n8n'],
     icon: Wrench
   },
   {
@@ -112,7 +148,7 @@ const skillGroups = [
   },
   {
     category: 'Quality & Security',
-    skills: ['SonarQube', 'OWASP ZAP', 'Trivy', 'JFrog Artifactory', 'Vulnerability Remediation & Patching'],
+    skills: ['SonarQube (Static/Dynamic Scanning)', 'JFrog Artifactory', 'Vulnerability Remediation & Patching', 'OWASP ZAP', 'Trivy'],
     icon: Award
   },
   {
@@ -184,9 +220,19 @@ export default function About() {
                     {item.role}
                   </h3>
                   <h4 className="text-xs font-semibold theme-text-secondary opacity-80 mt-0.5">{item.company}</h4>
-                  <p className="mt-3 text-xs leading-relaxed theme-text-secondary">
-                    {item.description}
-                  </p>
+                  {Array.isArray(item.description) ? (
+                    <ul className="mt-3 list-disc pl-4 space-y-2 text-xs leading-relaxed theme-text-secondary">
+                      {item.description.map((bullet, bulletIdx) => (
+                        <li key={bulletIdx} className="pl-1">
+                          {bullet}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-3 text-xs leading-relaxed theme-text-secondary">
+                      {item.description}
+                    </p>
+                  )}
                   {item.project && (
                     <div className="mt-4 rounded-xl border theme-border bg-white/3 dark:bg-white/3 light:bg-black/3 p-4 transition-all duration-300 hover:border-neutral-500/20">
                       <div className="text-[9px] font-bold uppercase tracking-widest text-[#0171E3] dark:text-[#4da3ff] mb-1">Key Project: {item.project.name}</div>

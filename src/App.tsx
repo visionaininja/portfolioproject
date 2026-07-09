@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Navbar from './components/Navbar.tsx'
@@ -37,6 +37,16 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
       </div>
     </motion.main>
   )
+}
+
+interface FrozenRouteWrapperProps {
+  renderRoutes: (location: any) => React.ReactNode
+}
+
+function FrozenRouteWrapper({ renderRoutes }: FrozenRouteWrapperProps) {
+  const location = useLocation()
+  const preservedLocation = useRef(location)
+  return <>{renderRoutes(preservedLocation.current)}</>
 }
 
 export default function App() {
@@ -79,65 +89,67 @@ export default function App() {
       {/* Route Switcher wrapped in AnimatePresence */}
       <div className="relative z-10 flex-1 flex flex-col pointer-events-none-layout">
         <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route
-              path="/"
-              element={
-                <PageWrapper>
-                  <Home />
-                </PageWrapper>
-              }
-            />
-            <Route
-              path="/about"
-              element={
-                <PageWrapper>
-                  <About />
-                </PageWrapper>
-              }
-            />
-            <Route
-              path="/projects"
-              element={
-                <PageWrapper>
-                  <Projects />
-                </PageWrapper>
-              }
-            />
-            <Route
-              path="/ideas"
-              element={
-                <PageWrapper>
-                  <Ideas />
-                </PageWrapper>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <PageWrapper>
-                  <Contact />
-                </PageWrapper>
-              }
-            />
-            <Route
-              path="/devops"
-              element={
-                <PageWrapper>
-                  <DevOps />
-                </PageWrapper>
-              }
-            />
-            {/* Fallback to Home */}
-            <Route
-              path="*"
-              element={
-                <PageWrapper>
-                  <Home />
-                </PageWrapper>
-              }
-            />
-          </Routes>
+          <FrozenRouteWrapper key={location.pathname} renderRoutes={(frozenLocation) => (
+            <Routes location={frozenLocation}>
+              <Route
+                path="/"
+                element={
+                  <PageWrapper>
+                    <Home />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <PageWrapper>
+                    <About />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/projects"
+                element={
+                  <PageWrapper>
+                    <Projects />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/ideas"
+                element={
+                  <PageWrapper>
+                    <Ideas />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <PageWrapper>
+                    <Contact />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/devops"
+                element={
+                  <PageWrapper>
+                    <DevOps />
+                  </PageWrapper>
+                }
+              />
+              {/* Fallback to Home */}
+              <Route
+                path="*"
+                element={
+                  <PageWrapper>
+                    <Home />
+                  </PageWrapper>
+                }
+              />
+            </Routes>
+          )} />
         </AnimatePresence>
       </div>
 
