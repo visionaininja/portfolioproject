@@ -38,7 +38,8 @@ export default function Navbar({ theme, toggleTheme }: NavbarProps) {
   }, [location.pathname])
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b theme-border bg-black/10 dark:bg-black/40 light:bg-white/40 backdrop-blur-md pointer-events-auto-elements transition-colors duration-300">
+    <>
+      <header className="sticky top-0 z-50 w-full border-b theme-border bg-black/10 dark:bg-black/40 light:bg-white/40 backdrop-blur-md pointer-events-auto-elements transition-colors duration-300">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
         {/* Left Side: Mobile Hamburger Menu & Logo */}
         <div className="flex items-center gap-4">
@@ -111,6 +112,7 @@ export default function Navbar({ theme, toggleTheme }: NavbarProps) {
           </Link>
         </div>
       </div>
+    </header>
 
       {/* Mobile/iPad Drawer Overlay (Left Side Slide-in Panel) */}
       <AnimatePresence>
@@ -220,6 +222,6 @@ export default function Navbar({ theme, toggleTheme }: NavbarProps) {
           </div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   )
 }
