@@ -1,3 +1,7 @@
 rdpubana-dev.ddns.net {
     reverse_proxy app:80
 }
+
+rdpubana-monitoring.ddns.net {
+    reverse_proxy host.docker.internal:4000
+}
