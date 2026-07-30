@@ -133,6 +133,117 @@ body {
   color: #111111;
 }
 
+/* ============================================================
+   Budget Tracker – theme-adaptive surface, border & text utils
+   ============================================================ */
+
+/* Card / panel surface */
+.bt-surface {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.10);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.light .bt-surface {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Inner / nested surface (table header, metric card sub-area) */
+.bt-surface-inner {
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 0.3s ease;
+}
+.light .bt-surface-inner {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Dividers & table row separators */
+.bt-divide > * + * {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.light .bt-divide > * + * {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Primary body text inside budget tracker */
+.bt-text {
+  color: #ffffff;
+  transition: color 0.3s ease;
+}
+.light .bt-text {
+  color: #111111;
+}
+
+/* Secondary / muted text */
+.bt-text-muted {
+  color: #9ca3af; /* neutral-400 */
+  transition: color 0.3s ease;
+}
+.light .bt-text-muted {
+  color: #4b5563; /* neutral-600 */
+}
+
+/* Input fields */
+.bt-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+.bt-input:focus {
+  outline: none;
+  border-color: #0171E3;
+}
+.light .bt-input {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: #111111;
+}
+.bt-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+.light .bt-input::placeholder {
+  color: rgba(0, 0, 0, 0.30);
+}
+
+/* Table header row */
+.bt-thead {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  color: #9ca3af;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+.light .bt-thead {
+  background: rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  color: #4b5563;
+}
+
+/* Table body rows */
+.bt-tbody-row {
+  transition: background 0.15s ease;
+}
+.bt-tbody-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.light .bt-tbody-row:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Inline edit inputs inside the table */
+.bt-table-input {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+.light .bt-table-input {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  color: #111111;
+}
+
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;

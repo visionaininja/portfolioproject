@@ -14,13 +14,13 @@ const projectsData = [
     liveUrl: 'https://github.com'
   },
   {
-    title: 'Cognitive Studio AI',
-    description: 'An AI-powered interface design assistant that writes component code on the fly based on layout schematics.',
-    category: 'AI Tools',
-    tags: ['React', 'TypeScript', 'Node.js', 'OpenAI API'],
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
+    title: 'Budget Management tracker',
+    description: 'A comprehensive, interactive personal finance dashboard to track income, savings, set budgets, and visualize expenses.',
+    category: 'Web Apps',
+    tags: ['React', 'TypeScript', 'SVG Charts', 'Local Storage'],
+    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
     githubUrl: '',
-    liveUrl: 'https://github.com'
+    liveUrl: '/budget-tracker'
   },
   {
     title: 'Monitoring & Observability',
