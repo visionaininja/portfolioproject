@@ -13,7 +13,7 @@ const sampleProjects = [
     tags: ['React', 'TypeScript', 'Fintech', 'Loan Calculator'],
     image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80',
     githubUrl: '',
-    liveUrl: 'about:blank'
+    liveUrl: '/car-financing'
   },
   {
     title: 'Budget Management tracker',

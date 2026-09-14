@@ -48,6 +48,8 @@ jobs:
           cd ~/app
           echo "DOCKER_IMAGE=docker.io/${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}" > .env
 
-          # Deploy
-          docker compose up -d --remove-orphans
+          # Force pull latest image and recreate running containers
+          docker compose pull || true
+          docker compose down --remove-orphans || true
+          docker compose up -d --force-recreate --remove-orphans
           docker image prune -f
