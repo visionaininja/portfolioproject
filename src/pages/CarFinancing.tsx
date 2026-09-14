@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Car, Plus, TrendingUp, 
   RotateCcw, Edit2, Trash2, ArrowLeft,
-  PieChart, Calendar, Clock, Lock, Unlock, Eye, EyeOff, ShieldAlert, KeyRound
+  PieChart, Calendar, Clock, Lock, Unlock, Eye, EyeOff, ShieldAlert, KeyRound,
+  Database, RefreshCw
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import CarProgressVisualization from '../components/car-financing/CarProgressVisualization.tsx'
@@ -58,7 +59,10 @@ export default function CarFinancing() {
   const [showPassword, setShowPassword] = useState(false)
   const [authError, setAuthError] = useState('')
 
-  // Load loans from localStorage or fall back to default samples
+  // Database Connection Status
+  const [dbStatus, setDbStatus] = useState<'connecting' | 'connected' | 'offline'>('connecting')
+
+  // Load loans from localStorage first as immediate fallback
   const [carLoans, setCarLoans] = useState<CarLoanData[]>(() => {
     try {
       const saved = localStorage.getItem('car_financing_loans_v1')
@@ -76,14 +80,51 @@ export default function CarFinancing() {
   const [editingLoan, setEditingLoan] = useState<CarLoanData | null>(null)
   const [replacingImageLoanId, setReplacingImageLoanId] = useState<string | null>(null)
 
-  // Save changes to localStorage
-  useEffect(() => {
+  // Fetch data from database API on mount
+  const fetchFromDatabase = async () => {
+    setDbStatus('connecting')
     try {
-      localStorage.setItem('car_financing_loans_v1', JSON.stringify(carLoans))
+      const res = await fetch('/api/car-loans')
+      if (res.ok) {
+        const data = await res.json()
+        if (Array.isArray(data) && data.length > 0) {
+          setCarLoans(data)
+          localStorage.setItem('car_financing_loans_v1', JSON.stringify(data))
+        }
+        setDbStatus('connected')
+      } else {
+        setDbStatus('offline')
+      }
     } catch (e) {
-      console.error('Failed to save car loans to localStorage', e)
+      console.warn('Database server unreachable, using local cache', e)
+      setDbStatus('offline')
     }
-  }, [carLoans])
+  }
+
+  useEffect(() => {
+    fetchFromDatabase()
+  }, [])
+
+  // Helper to persist updates to both Database API and localStorage
+  const saveCarLoansToDb = async (newLoans: CarLoanData[]) => {
+    setCarLoans(newLoans)
+    try {
+      localStorage.setItem('car_financing_loans_v1', JSON.stringify(newLoans))
+      const res = await fetch('/api/car-loans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newLoans)
+      })
+      if (res.ok) {
+        setDbStatus('connected')
+      } else {
+        setDbStatus('offline')
+      }
+    } catch (e) {
+      console.error('Failed to post update to Database API', e)
+      setDbStatus('offline')
+    }
+  }
 
   // Auth unlock handler
   const handleUnlock = (e: React.FormEvent) => {
@@ -125,7 +166,6 @@ export default function CarFinancing() {
       ? (totalPaymentsMadeAll / totalLoanTermsAll) * 100 
       : 0
 
-    // Next upcoming payment due among all active loans (26th of month)
     const upcomingDueDateInfo = getNextPaymentDueDate(26)
 
     return {
@@ -141,23 +181,23 @@ export default function CarFinancing() {
 
   // Handlers
   const handleSaveLoan = (savedLoan: CarLoanData) => {
-    setCarLoans(prev => {
-      const exists = prev.some(item => item.id === savedLoan.id)
-      if (exists) {
-        return prev.map(item => item.id === savedLoan.id ? savedLoan : item)
-      }
-      return [savedLoan, ...prev]
-    })
+    const exists = carLoans.some(item => item.id === savedLoan.id)
+    const updated = exists 
+      ? carLoans.map(item => item.id === savedLoan.id ? savedLoan : item)
+      : [savedLoan, ...carLoans]
+
+    saveCarLoansToDb(updated)
   }
 
   const handleDeleteLoan = (id: string) => {
     if (window.confirm('Are you sure you want to delete this car loan record?')) {
-      setCarLoans(prev => prev.filter(loan => loan.id !== id))
+      const updated = carLoans.filter(loan => loan.id !== id)
+      saveCarLoansToDb(updated)
     }
   }
 
   const handleUpdatePaymentsMade = (id: string, newPaymentsMade: number) => {
-    setCarLoans(prev => prev.map(loan => {
+    const updated = carLoans.map(loan => {
       if (loan.id === id) {
         return {
           ...loan,
@@ -165,22 +205,24 @@ export default function CarFinancing() {
         }
       }
       return loan
-    }))
+    })
+    saveCarLoansToDb(updated)
   }
 
   const handleReplaceImage = (id: string, newBase64: string) => {
-    setCarLoans(prev => prev.map(loan => {
+    const updated = carLoans.map(loan => {
       if (loan.id === id) {
         return { ...loan, carImage: newBase64 }
       }
       return loan
-    }))
+    })
+    saveCarLoansToDb(updated)
     setReplacingImageLoanId(null)
   }
 
   const handleResetDefaults = () => {
     if (window.confirm('Reset all car loans back to default demo vehicles?')) {
-      setCarLoans(DEFAULT_CAR_LOANS)
+      saveCarLoansToDb(DEFAULT_CAR_LOANS)
     }
   }
 
@@ -274,7 +316,30 @@ export default function CarFinancing() {
           <ArrowLeft className="h-4 w-4" />
           Back to Projects
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* DATABASE SYNC STATUS BADGE */}
+          <div
+            onClick={fetchFromDatabase}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold border transition-colors cursor-pointer ${
+              dbStatus === 'connected'
+                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                : dbStatus === 'connecting'
+                ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30'
+                : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+            }`}
+            title="Click to sync with Central Database"
+          >
+            <Database className="w-3.5 h-3.5 text-emerald-400" />
+            <span>
+              {dbStatus === 'connected'
+                ? 'Database Synced (Cross-Device)'
+                : dbStatus === 'connecting'
+                ? 'Syncing Database...'
+                : 'Local Cache Mode'}
+            </span>
+            <RefreshCw className={`w-3 h-3 ${dbStatus === 'connecting' ? 'animate-spin' : ''}`} />
+          </div>
+
           <button
             onClick={handleResetDefaults}
             className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[11px] font-bold text-neutral-400 hover:bg-white/10 hover:text-white border border-white/10 transition-colors cursor-pointer"
@@ -304,7 +369,7 @@ export default function CarFinancing() {
             Car Financing<span className="text-cyan-400">.</span>
           </h1>
           <p className="mt-3 max-w-2xl text-xs md:text-sm text-neutral-400 leading-relaxed">
-            Watch your car come to life as you pay your loan. Each vehicle features a dynamic HD image layer reveal driven directly by your payment progress percentage.
+            Watch your car come to life as you pay your loan. Integrated with a central cross-device database to keep your vehicles and payment records synced on all devices.
           </p>
         </div>
 

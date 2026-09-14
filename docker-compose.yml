@@ -2,6 +2,8 @@ services:
   app:
     image: ${DOCKER_IMAGE}
     restart: always
+    volumes:
+      - car_db_data:/usr/share/nginx/html/data
     expose:
       - "80"
 
@@ -21,5 +23,6 @@ services:
       - app
 
 volumes:
+  car_db_data:
   caddy_data:
   caddy_config:

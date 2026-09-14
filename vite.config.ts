@@ -9,8 +9,14 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    port: 3000,
+    port: 5173,
     host: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:3001',
+        changeOrigin: true
+      }
+    },
     watch: {
       usePolling: true,
     }
