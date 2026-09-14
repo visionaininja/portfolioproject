@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Car, Plus, TrendingUp, 
   RotateCcw, Edit2, Trash2, ArrowLeft,
-  PieChart, Calendar, Clock
+  PieChart, Calendar, Clock, Lock, Unlock, Eye, EyeOff, ShieldAlert, KeyRound
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import CarProgressVisualization from '../components/car-financing/CarProgressVisualization.tsx'
@@ -50,6 +50,14 @@ const DEFAULT_CAR_LOANS: CarLoanData[] = [
 ]
 
 export default function CarFinancing() {
+  // Password Protection Auth State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('car_financing_auth') === 'true'
+  })
+  const [passwordInput, setPasswordInput] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [authError, setAuthError] = useState('')
+
   // Load loans from localStorage or fall back to default samples
   const [carLoans, setCarLoans] = useState<CarLoanData[]>(() => {
     try {
@@ -76,6 +84,25 @@ export default function CarFinancing() {
       console.error('Failed to save car loans to localStorage', e)
     }
   }, [carLoans])
+
+  // Auth unlock handler
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (passwordInput === 'Password.123!') {
+      sessionStorage.setItem('car_financing_auth', 'true')
+      setIsAuthenticated(true)
+      setAuthError('')
+    } else {
+      setAuthError('Incorrect password. Access denied.')
+    }
+  }
+
+  // Auth lock handler
+  const handleLock = () => {
+    sessionStorage.removeItem('car_financing_auth')
+    setIsAuthenticated(false)
+    setPasswordInput('')
+  }
 
   // Portfolio KPIs
   const portfolioSummary = useMemo(() => {
@@ -157,11 +184,89 @@ export default function CarFinancing() {
     }
   }
 
+  // RENDER LOCK SCREEN IF UNAUTHENTICATED
+  if (!isAuthenticated) {
+    return (
+      <div className="mx-auto max-w-7xl px-6 py-12 md:px-12 md:py-20 min-h-[70vh] flex flex-col justify-center items-center text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="glass-card p-8 md:p-12 rounded-3xl max-w-md w-full border border-white/15 bg-neutral-900/80 shadow-2xl relative overflow-hidden"
+        >
+          {/* Glowing gradient accent line */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+
+          <div className="w-16 h-16 rounded-2xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mx-auto mb-6 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+            <Lock className="w-8 h-8" />
+          </div>
+
+          <h1 className="font-display text-2xl md:text-3xl font-extrabold tracking-tight text-white mb-2">
+            Protected Dashboard
+          </h1>
+          <p className="text-xs text-neutral-400 leading-relaxed mb-6">
+            Please enter the access password to view the Car Financing records.
+          </p>
+
+          <form onSubmit={handleUnlock} className="space-y-4">
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter password..."
+                value={passwordInput}
+                onChange={(e) => {
+                  setPasswordInput(e.target.value)
+                  setAuthError('')
+                }}
+                className="w-full rounded-2xl bg-black/60 border border-white/15 px-4 py-3 text-sm text-white placeholder-neutral-500 focus:border-cyan-400 focus:outline-none pr-11 font-mono"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {authError && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl p-2.5 flex items-center justify-center gap-1.5"
+              >
+                <ShieldAlert className="w-4 h-4 text-red-400" />
+                {authError}
+              </motion.div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full rounded-full bg-cyan-500 py-3 text-xs font-extrabold uppercase tracking-wider text-black hover:bg-cyan-400 transition-all duration-200 hover:scale-[1.02] active-spring-scale shadow-[0_0_20px_rgba(6,182,212,0.3)] cursor-pointer flex items-center justify-center gap-2"
+            >
+              <KeyRound className="w-4 h-4" />
+              Unlock Dashboard
+            </button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-white/10 flex justify-center">
+            <Link
+              to="/projects"
+              className="inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white transition-colors uppercase tracking-wider"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back to Projects
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-10 md:px-12 md:py-16">
       
-      {/* NAVIGATION BACK LINK */}
-      <div className="mb-6 flex items-center justify-between">
+      {/* NAVIGATION BACK LINK & TOP CONTROLS */}
+      <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
         <Link
           to="/projects"
           className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition-colors"
@@ -169,13 +274,23 @@ export default function CarFinancing() {
           <ArrowLeft className="h-4 w-4" />
           Back to Projects
         </Link>
-        <button
-          onClick={handleResetDefaults}
-          className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[11px] font-bold text-neutral-400 hover:bg-white/10 hover:text-white border border-white/10 transition-colors cursor-pointer"
-        >
-          <RotateCcw className="h-3.5 w-3.5" />
-          Reset Demo Data
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleResetDefaults}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[11px] font-bold text-neutral-400 hover:bg-white/10 hover:text-white border border-white/10 transition-colors cursor-pointer"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Reset Demo Data
+          </button>
+          <button
+            onClick={handleLock}
+            className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 px-3 py-1.5 text-[11px] font-bold text-cyan-300 border border-cyan-500/30 transition-colors cursor-pointer"
+            title="Lock page authentication"
+          >
+            <Unlock className="h-3.5 w-3.5 text-cyan-400" />
+            Lock Page
+          </button>
+        </div>
       </div>
 
       {/* DASHBOARD HEADER */}
