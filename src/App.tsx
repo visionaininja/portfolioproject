@@ -10,6 +10,7 @@ import Ideas from './pages/Ideas.tsx'
 import Contact from './pages/Contact.tsx'
 import DevOps from './pages/DevOps.tsx'
 import BudgetTracker from './pages/BudgetTracker.tsx'
+import CarFinancing from './pages/CarFinancing.tsx'
 import FluidBackground from './components/FluidBackground.tsx'
 
 // Scroll restoration hook
@@ -145,6 +146,14 @@ export default function App() {
                 element={
                   <PageWrapper>
                     <BudgetTracker />
+                  </PageWrapper>
+                }
+              />
+              <Route
+                path="/car-financing"
+                element={
+                  <PageWrapper>
+                    <CarFinancing />
                   </PageWrapper>
                 }
               />

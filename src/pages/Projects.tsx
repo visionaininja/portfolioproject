@@ -5,13 +5,13 @@ import devopsTelemetryImg from '../assets/devops-telemetry.png'
 
 const projectsData = [
   {
-    title: 'Aether DeFi Dashboard',
-    description: 'A premium, real-time cryptocurrency dashboard featuring detailed charts, wallet integration, and yield-farming trackers.',
+    title: 'Car financing',
+    description: 'An interactive car financing calculator and auto loan management dashboard to estimate monthly payments, interest rates, and loan terms.',
     category: 'Web Apps',
-    tags: ['React', 'Vite', 'Framer Motion', 'Chart.js'],
-    image: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=800&q=80',
+    tags: ['React', 'TypeScript', 'Fintech', 'Loan Calculator'],
+    image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80',
     githubUrl: '',
-    liveUrl: 'https://github.com'
+    liveUrl: 'about:blank'
   },
   {
     title: 'Budget Management tracker',
