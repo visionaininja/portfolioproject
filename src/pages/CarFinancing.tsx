@@ -15,11 +15,11 @@ const DEFAULT_CAR_LOANS: CarLoanData[] = [
   {
     id: 'loan_civic_jeremiah',
     carName: 'Honda Civic RS Turbo (Jeremiah)',
-    plateNumber: 'NBD 2026',
+    plateNumber: 'NAB 1748',
     loanTerm: 36,
     paymentsMade: 6,
-    monthlyPayment: 28500,
-    totalLoanAmount: 1026000,
+    monthlyPayment: 25698,
+    totalLoanAmount: 925128,
     startDate: '2026-04-27',
     paymentDueDay: 26,
     carImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80'
@@ -74,13 +74,26 @@ export default function CarFinancing() {
   // Database Connection Status
   const [dbStatus, setDbStatus] = useState<'connecting' | 'connected' | 'offline'>('connecting')
 
-  // Load loans from localStorage first as immediate fallback
+  // Load loans from localStorage first as immediate fallback (with auto-migration)
   const [carLoans, setCarLoans] = useState<CarLoanData[]>(() => {
     try {
       const saved = localStorage.getItem('car_financing_loans_v1')
       if (saved) {
         const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const migrated = parsed.map(loan => {
+            if (loan.id === 'loan_civic_jeremiah' || loan.startDate === '2026-04-27' || loan.carName?.includes('Civic')) {
+              return {
+                ...loan,
+                paymentsMade: Math.max(6, loan.paymentsMade ?? 6),
+                plateNumber: loan.plateNumber === 'NBD 2026' ? 'NAB 1748' : (loan.plateNumber || 'NAB 1748')
+              }
+            }
+            return loan
+          })
+          localStorage.setItem('car_financing_loans_v1', JSON.stringify(migrated))
+          return migrated
+        }
       }
     } catch (e) {
       console.error('Failed to parse saved car loans', e)
@@ -118,10 +131,12 @@ export default function CarFinancing() {
                 if (!sLoan) {
                   mergedMap.set(lLoan.id, lLoan) // keep local loan created by user
                 } else {
+                  const isCivic = lLoan.id === 'loan_civic_jeremiah' || lLoan.startDate === '2026-04-27'
+                  const minPayments = isCivic ? 6 : 0
                   mergedMap.set(lLoan.id, {
                     ...sLoan,
                     ...lLoan,
-                    paymentsMade: Math.max(sLoan.paymentsMade || 0, lLoan.paymentsMade || 0)
+                    paymentsMade: Math.max(sLoan.paymentsMade || 0, lLoan.paymentsMade || 0, minPayments)
                   })
                 }
               }

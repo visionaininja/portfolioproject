@@ -15,11 +15,11 @@ const DEFAULT_LOANS = [
   {
     id: 'loan_civic_jeremiah',
     carName: 'Honda Civic RS Turbo (Jeremiah)',
-    plateNumber: 'NBD 2026',
+    plateNumber: 'NAB 1748',
     loanTerm: 36,
     paymentsMade: 6,
-    monthlyPayment: 28500,
-    totalLoanAmount: 1026000,
+    monthlyPayment: 25698,
+    totalLoanAmount: 925128,
     startDate: '2026-04-27',
     paymentDueDay: 26,
     carImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80'
