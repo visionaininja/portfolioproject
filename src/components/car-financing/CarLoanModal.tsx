@@ -16,12 +16,58 @@ export interface CarLoanData {
   carImage: string
 }
 
-export function getNextPaymentDueDate(dueDay: number = 26): { dateString: string; daysRemaining: number } {
+export function getNextPaymentDueDate(
+  paymentDueDay: number = 26,
+  startDate?: string,
+  paymentsMade?: number,
+  loanTerm?: number
+): { dateString: string; daysRemaining: number } {
   const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // If we have loan context, calculate based on actual payment timeline
+  if (startDate && paymentsMade !== undefined && loanTerm !== undefined) {
+    // Loan fully paid
+    if (paymentsMade >= loanTerm) {
+      return { dateString: 'Fully Paid! 🎉', daysRemaining: 0 }
+    }
+
+    // The next payment number is paymentsMade + 1 (1-indexed).
+    // Payment N is due N months after the start date, on the paymentDueDay.
+    const start = new Date(startDate + 'T00:00:00')
+    const nextPaymentNumber = paymentsMade + 1
+
+    let targetYear = start.getFullYear()
+    let targetMonth = start.getMonth() + nextPaymentNumber
+
+    // Normalize month overflow
+    targetYear += Math.floor(targetMonth / 12)
+    targetMonth = targetMonth % 12
+
+    // Clamp due day to actual days in the target month
+    const daysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate()
+    const actualDueDay = Math.min(paymentDueDay, daysInTargetMonth)
+
+    const dueDate = new Date(targetYear, targetMonth, actualDueDay)
+    dueDate.setHours(0, 0, 0, 0)
+
+    const diffTime = dueDate.getTime() - today.getTime()
+    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    const formattedDate = dueDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+
+    return { dateString: formattedDate, daysRemaining }
+  }
+
+  // Fallback: simple "next Nth day" calculation (used when no loan context)
   let targetYear = today.getFullYear()
   let targetMonth = today.getMonth()
 
-  if (today.getDate() > dueDay) {
+  if (today.getDate() > paymentDueDay) {
     targetMonth += 1
     if (targetMonth > 11) {
       targetMonth = 0
@@ -30,10 +76,11 @@ export function getNextPaymentDueDate(dueDay: number = 26): { dateString: string
   }
 
   const daysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate()
-  const actualDueDay = Math.min(dueDay, daysInTargetMonth)
+  const actualDueDay = Math.min(paymentDueDay, daysInTargetMonth)
 
   const dueDate = new Date(targetYear, targetMonth, actualDueDay)
-  
+  dueDate.setHours(0, 0, 0, 0)
+
   const diffTime = dueDate.getTime() - today.getTime()
   const daysRemaining = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
 
@@ -100,7 +147,7 @@ export default function CarLoanModal({
   const paymentPercentage = loanTerm > 0 ? (paymentsMade / loanTerm) * 100 : 0
   const amountPaid = paymentsMade * monthlyPayment
   const remainingBalance = Math.max(0, totalLoanAmount - amountPaid)
-  const nextDueDateInfo = getNextPaymentDueDate(paymentDueDay)
+  const nextDueDateInfo = getNextPaymentDueDate(paymentDueDay, startDate, paymentsMade, loanTerm)
 
   // Auto-calculate monthly payment if total loan & term change
   const handleTotalLoanChange = (val: number) => {

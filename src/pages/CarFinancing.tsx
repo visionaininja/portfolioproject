@@ -88,8 +88,26 @@ export default function CarFinancing() {
       if (res.ok) {
         const data = await res.json()
         if (Array.isArray(data) && data.length > 0) {
-          setCarLoans(data)
-          localStorage.setItem('car_financing_loans_v1', JSON.stringify(data))
+          // Compare with current local state to avoid overwriting newer local changes.
+          // If the server data has equal or higher total paymentsMade, trust the server.
+          // Otherwise, push local data TO the server (local is newer).
+          const serverTotalPayments = data.reduce((sum: number, l: CarLoanData) => sum + (l.paymentsMade || 0), 0)
+          const localTotalPayments = carLoans.reduce((sum, l) => sum + (l.paymentsMade || 0), 0)
+
+          if (serverTotalPayments >= localTotalPayments) {
+            // Server is same or ahead — use server data
+            setCarLoans(data)
+            localStorage.setItem('car_financing_loans_v1', JSON.stringify(data))
+          } else {
+            // Local is ahead (user clicked +1 Month but server didn't save yet) — push local to server
+            try {
+              await fetch('/api/car-loans', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(carLoans)
+              })
+            } catch { /* ignore push failure */ }
+          }
         }
         setDbStatus('connected')
       } else {
@@ -166,7 +184,11 @@ export default function CarFinancing() {
       ? (totalPaymentsMadeAll / totalLoanTermsAll) * 100 
       : 0
 
-    const upcomingDueDateInfo = getNextPaymentDueDate(26)
+    // Use the first active loan's context for the portfolio-level due date
+    const firstLoan = carLoans[0]
+    const upcomingDueDateInfo = firstLoan
+      ? getNextPaymentDueDate(firstLoan.paymentDueDay || 26, firstLoan.startDate, firstLoan.paymentsMade, firstLoan.loanTerm)
+      : getNextPaymentDueDate(26)
 
     return {
       totalActiveLoans: carLoans.length,
@@ -404,7 +426,11 @@ export default function CarFinancing() {
           </div>
           <div className="text-xl font-extrabold text-cyan-400">{portfolioSummary.nextDueDate}</div>
           <div className="text-[10px] text-cyan-300 font-bold mt-1">
-            Due on 26th of month ({portfolioSummary.nextDueDaysRemaining} days remaining)
+            {portfolioSummary.nextDueDaysRemaining > 0
+              ? `${portfolioSummary.nextDueDaysRemaining} days remaining`
+              : portfolioSummary.nextDueDaysRemaining === 0
+              ? 'Due today!'
+              : `${Math.abs(portfolioSummary.nextDueDaysRemaining)} days overdue`}
           </div>
         </div>
 
@@ -461,7 +487,7 @@ export default function CarFinancing() {
             const remainingBalance = Math.max(0, loan.totalLoanAmount - amountPaid)
             const paymentPercentage = loan.loanTerm > 0 ? (loan.paymentsMade / loan.loanTerm) * 100 : 0
             const monthsRemaining = Math.max(0, loan.loanTerm - loan.paymentsMade)
-            const dueInfo = getNextPaymentDueDate(loan.paymentDueDay || 26)
+            const dueInfo = getNextPaymentDueDate(loan.paymentDueDay || 26, loan.startDate, loan.paymentsMade, loan.loanTerm)
 
             return (
               <motion.div
@@ -491,7 +517,7 @@ export default function CarFinancing() {
                       <span>•</span>
                       <span className="rounded-full bg-cyan-500/15 border border-cyan-500/30 px-2.5 py-0.5 text-[11px] font-bold text-cyan-300 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-cyan-400" />
-                        Next Amortization: {dueInfo.dateString} ({dueInfo.daysRemaining} days)
+                        Next Amortization: {dueInfo.dateString} ({dueInfo.daysRemaining > 0 ? `${dueInfo.daysRemaining} days` : dueInfo.daysRemaining === 0 ? 'Today!' : `${Math.abs(dueInfo.daysRemaining)} days overdue`})
                       </span>
                     </p>
                   </div>
@@ -569,7 +595,13 @@ export default function CarFinancing() {
                   <div className="bg-black/30 p-3 rounded-xl border border-cyan-500/20 bg-cyan-950/20">
                     <div className="text-[10px] uppercase font-bold text-cyan-400">Next Amortization Due</div>
                     <div className="text-sm font-extrabold text-white mt-0.5">{dueInfo.dateString}</div>
-                    <div className="text-[9px] text-cyan-300 font-mono font-bold">Due in {dueInfo.daysRemaining} days (26th)</div>
+                    <div className="text-[9px] text-cyan-300 font-mono font-bold">
+                      {dueInfo.daysRemaining > 0
+                        ? `Due in ${dueInfo.daysRemaining} days (${loan.paymentDueDay || 26}th)`
+                        : dueInfo.daysRemaining === 0
+                        ? `Due today! (${loan.paymentDueDay || 26}th)`
+                        : `${Math.abs(dueInfo.daysRemaining)} days overdue (${loan.paymentDueDay || 26}th)`}
+                    </div>
                   </div>
 
                   <div className="bg-black/30 p-3 rounded-xl border border-white/5">
