@@ -13,6 +13,18 @@ import CarLoanModal, { CarLoanData, getNextPaymentDueDate } from '../components/
 
 const DEFAULT_CAR_LOANS: CarLoanData[] = [
   {
+    id: 'loan_civic_jeremiah',
+    carName: 'Honda Civic RS Turbo (Jeremiah)',
+    plateNumber: 'NBD 2026',
+    loanTerm: 36,
+    paymentsMade: 6,
+    monthlyPayment: 28500,
+    totalLoanAmount: 1026000,
+    startDate: '2026-04-27',
+    paymentDueDay: 26,
+    carImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80'
+  },
+  {
     id: 'loan_vios_1',
     carName: 'Toyota Vios 1.3 XLE',
     plateNumber: 'ABC 1234',
@@ -80,39 +92,58 @@ export default function CarFinancing() {
   const [editingLoan, setEditingLoan] = useState<CarLoanData | null>(null)
   const [replacingImageLoanId, setReplacingImageLoanId] = useState<string | null>(null)
 
-  // Fetch data from database API on mount
+  // Fetch data from database API on mount with per-loan smart merging
   const fetchFromDatabase = async () => {
     setDbStatus('connecting')
     try {
       const res = await fetch('/api/car-loans')
-      if (res.ok) {
-        const data = await res.json()
-        if (Array.isArray(data) && data.length > 0) {
-          // Compare with current local state to avoid overwriting newer local changes.
-          // If the server data has equal or higher total paymentsMade, trust the server.
-          // Otherwise, push local data TO the server (local is newer).
-          const serverTotalPayments = data.reduce((sum: number, l: CarLoanData) => sum + (l.paymentsMade || 0), 0)
-          const localTotalPayments = carLoans.reduce((sum, l) => sum + (l.paymentsMade || 0), 0)
+      const contentType = res.headers.get('content-type') || ''
+      if (res.ok && contentType.includes('application/json')) {
+        const serverData = await res.json()
+        if (Array.isArray(serverData)) {
+          setCarLoans(prevLocal => {
+            const mergedMap = new Map<string, CarLoanData>()
 
-          if (serverTotalPayments >= localTotalPayments) {
-            // Server is same or ahead — use server data
-            setCarLoans(data)
-            localStorage.setItem('car_financing_loans_v1', JSON.stringify(data))
-          } else {
-            // Local is ahead (user clicked +1 Month but server didn't save yet) — push local to server
-            try {
-              await fetch('/api/car-loans', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(carLoans)
-              })
-            } catch { /* ignore push failure */ }
-          }
+            // 1. First populate with server data
+            serverData.forEach((sLoan: CarLoanData) => {
+              if (sLoan && sLoan.id) {
+                mergedMap.set(sLoan.id, sLoan)
+              }
+            })
+
+            // 2. Merge with local data (preserve highest paymentsMade and local edits)
+            prevLocal.forEach((lLoan: CarLoanData) => {
+              if (lLoan && lLoan.id) {
+                const sLoan = mergedMap.get(lLoan.id)
+                if (!sLoan) {
+                  mergedMap.set(lLoan.id, lLoan) // keep local loan created by user
+                } else {
+                  mergedMap.set(lLoan.id, {
+                    ...sLoan,
+                    ...lLoan,
+                    paymentsMade: Math.max(sLoan.paymentsMade || 0, lLoan.paymentsMade || 0)
+                  })
+                }
+              }
+            })
+
+            const mergedList = Array.from(mergedMap.values())
+            localStorage.setItem('car_financing_loans_v1', JSON.stringify(mergedList))
+
+            // Push merged back to server to sync
+            fetch('/api/car-loans', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(mergedList)
+            }).catch(() => {})
+
+            return mergedList
+          })
+          setDbStatus('connected')
+          return
         }
-        setDbStatus('connected')
-      } else {
-        setDbStatus('offline')
       }
+      setDbStatus('offline')
     } catch (e) {
       console.warn('Database server unreachable, using local cache', e)
       setDbStatus('offline')

@@ -16,54 +16,7 @@ export interface CarLoanData {
   carImage: string
 }
 
-export function getNextPaymentDueDate(
-  paymentDueDay: number = 26,
-  startDate?: string,
-  paymentsMade?: number,
-  loanTerm?: number
-): { dateString: string; daysRemaining: number } {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-
-  // If we have loan context, calculate based on actual payment timeline
-  if (startDate && paymentsMade !== undefined && loanTerm !== undefined) {
-    // Loan fully paid
-    if (paymentsMade >= loanTerm) {
-      return { dateString: 'Fully Paid! 🎉', daysRemaining: 0 }
-    }
-
-    // The next payment number is paymentsMade + 1 (1-indexed).
-    // Payment N is due N months after the start date, on the paymentDueDay.
-    const start = new Date(startDate + 'T00:00:00')
-    const nextPaymentNumber = paymentsMade + 1
-
-    let targetYear = start.getFullYear()
-    let targetMonth = start.getMonth() + nextPaymentNumber
-
-    // Normalize month overflow
-    targetYear += Math.floor(targetMonth / 12)
-    targetMonth = targetMonth % 12
-
-    // Clamp due day to actual days in the target month
-    const daysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate()
-    const actualDueDay = Math.min(paymentDueDay, daysInTargetMonth)
-
-    const dueDate = new Date(targetYear, targetMonth, actualDueDay)
-    dueDate.setHours(0, 0, 0, 0)
-
-    const diffTime = dueDate.getTime() - today.getTime()
-    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    const formattedDate = dueDate.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
-
-    return { dateString: formattedDate, daysRemaining }
-  }
-
-  // Fallback: simple "next Nth day" calculation (used when no loan context)
+function fallbackNextDueDate(paymentDueDay: number = 26, today: Date) {
   let targetYear = today.getFullYear()
   let targetMonth = today.getMonth()
 
@@ -91,6 +44,67 @@ export function getNextPaymentDueDate(
   })
 
   return { dateString: formattedDate, daysRemaining }
+}
+
+export function getNextPaymentDueDate(
+  paymentDueDay: number = 26,
+  startDate?: string,
+  paymentsMade?: number,
+  loanTerm?: number
+): { dateString: string; daysRemaining: number } {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // If we have loan context, calculate based on actual payment timeline
+  if (startDate && paymentsMade !== undefined && loanTerm !== undefined) {
+    if (paymentsMade >= loanTerm) {
+      return { dateString: 'Fully Paid! 🎉', daysRemaining: 0 }
+    }
+
+    const start = new Date(startDate + 'T00:00:00')
+    if (isNaN(start.getTime())) {
+      return fallbackNextDueDate(paymentDueDay, today)
+    }
+
+    // Determine first payment due month:
+    // If start date's day of month <= paymentDueDay, first payment is in start date's month.
+    // If start date's day of month > paymentDueDay, first payment is in the following month.
+    let firstYear = start.getFullYear()
+    let firstMonth = start.getMonth()
+    if (start.getDate() > paymentDueDay) {
+      firstMonth += 1
+      if (firstMonth > 11) {
+        firstMonth = 0
+        firstYear += 1
+      }
+    }
+
+    // Next due payment is (paymentsMade) months after first payment month
+    let targetYear = firstYear
+    let targetMonth = firstMonth + paymentsMade
+
+    targetYear += Math.floor(targetMonth / 12)
+    targetMonth = ((targetMonth % 12) + 12) % 12
+
+    const daysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate()
+    const actualDueDay = Math.min(paymentDueDay, daysInTargetMonth)
+
+    const dueDate = new Date(targetYear, targetMonth, actualDueDay)
+    dueDate.setHours(0, 0, 0, 0)
+
+    const diffTime = dueDate.getTime() - today.getTime()
+    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    const formattedDate = dueDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+
+    return { dateString: formattedDate, daysRemaining }
+  }
+
+  return fallbackNextDueDate(paymentDueDay, today)
 }
 
 interface CarLoanModalProps {
@@ -349,8 +363,27 @@ export default function CarLoanModal({
                     max={loanTerm}
                     step="1"
                     value={paymentsMade}
-                    onChange={(e) => setPaymentsMade(e.target.value === '' ? 0 : Number(e.target.value))}
+                    onChange={(e) => setPaymentsMade(Math.min(loanTerm, Math.max(0, e.target.value === '' ? 0 : Number(e.target.value))))}
                     className="w-full rounded-xl bg-neutral-950 border border-white/10 px-4 py-2.5 text-sm text-white focus:border-cyan-400 focus:outline-none font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-cyan-400 mb-1 flex items-center justify-between">
+                    <span>Months Remaining</span>
+                    <span className="text-[9px] text-neutral-400 font-normal">(Auto-calculated)</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max={loanTerm}
+                    step="1"
+                    value={Math.max(0, loanTerm - paymentsMade)}
+                    onChange={(e) => {
+                      const rem = e.target.value === '' ? 0 : Number(e.target.value)
+                      setPaymentsMade(Math.min(loanTerm, Math.max(0, loanTerm - rem)))
+                    }}
+                    className="w-full rounded-xl bg-neutral-950 border border-cyan-500/40 px-4 py-2.5 text-sm text-cyan-300 font-bold focus:border-cyan-400 focus:outline-none font-mono"
                   />
                 </div>
 

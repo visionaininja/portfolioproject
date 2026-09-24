@@ -13,6 +13,18 @@ const DB_FILE = path.join(DATA_DIR, 'car_loans.json')
 // Default sample loans if DB file is brand new
 const DEFAULT_LOANS = [
   {
+    id: 'loan_civic_jeremiah',
+    carName: 'Honda Civic RS Turbo (Jeremiah)',
+    plateNumber: 'NBD 2026',
+    loanTerm: 36,
+    paymentsMade: 6,
+    monthlyPayment: 28500,
+    totalLoanAmount: 1026000,
+    startDate: '2026-04-27',
+    paymentDueDay: 26,
+    carImage: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80'
+  },
+  {
     id: 'loan_vios_1',
     carName: 'Toyota Vios 1.3 XLE',
     plateNumber: 'ABC 1234',
